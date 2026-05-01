@@ -1,5 +1,6 @@
 streamlit
 leafmap
 localtileserver
+rasterio
 xarray
 rioxarray
