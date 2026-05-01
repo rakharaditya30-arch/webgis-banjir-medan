@@ -1,6 +1,7 @@
 streamlit
 leafmap
-localtileserver
 rasterio
 xarray
 rioxarray
+matplotlib
+numpy
