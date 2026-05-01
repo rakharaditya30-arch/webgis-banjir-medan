@@ -24,33 +24,7 @@ st.set_page_config(
 # ─────────────────────────────────────────────────────────────
 #  SESSION STATE — inisialisasi semua state di sini
 # ─────────────────────────────────────────────────────────────
-if os.name != 'nt':  # Jika bukan Windows
-    os.environ['PROJ_LIB'] = '/usr/share/proj'
 
-st.title("Sistem Informasi Geografis Kerawanan Banjir Kota Medan")
-
-path_tif = "risiko_banjir_medan.tif"
-
-if os.path.exists(path_tif):
-    # Membuat objek peta
-    m = leafmap.Map(center=[3.59, 98.67], zoom=12)
-    m.add_basemap("CartoDB.DarkMatter")
-
-    # Menampilkan Raster dengan Palette Warna (1:Rendah, 2:Sedang, 3:Tinggi, 4:Sangat Tinggi)
-    # Palette ini akan memaksa warna muncul di peta
-    m.add_raster(
-        path_tif, 
-        layer_name="Peta Risiko Banjir", 
-        palette=['#2ecc71', '#f1c40f', '#e67e22', '#e74c3c'], # Hijau, Kuning, Oranye, Merah
-        opacity=0.7,
-        zoom_to_layer=True
-    )
-    
-    m.to_streamlit(height=700)
-else:
-    st.error(f"⚠️ File '{path_tif}' tidak ditemukan di repository GitHub Anda!")
-
-random.seed(42) 
 # ─────────────────────────────────────────────────────────────
 #  KONSTANTA
 # ─────────────────────────────────────────────────────────────
