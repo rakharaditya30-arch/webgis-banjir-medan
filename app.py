@@ -6,24 +6,28 @@
 =============================================================================
 """
 
-# 1. SEMUA IMPORT DI PALING ATAS
-import streamlit as st
-import leafmap.foliumap as leafmap
 import os
 import random
-import numpy as np
+import streamlit as st
+os.environ['PROJ_LIB'] = r'C:\Users\Lenovo\miniconda3\envs\medan_webgis\Library\share\proj'
+import leafmap.foliumap as leafmap
 
 # ─────────────────────────────────────────────────────────────
 #  KONFIGURASI HALAMAN
 # ─────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Dashboard Risiko Banjir Medan",
+    page_title="Banjir Kota Medan",
+    page_icon="",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 # ─────────────────────────────────────────────────────────────
 #  SESSION STATE — inisialisasi semua state di sini
 # ─────────────────────────────────────────────────────────────
+if "panel_open"   not in st.session_state: st.session_state.panel_open   = False
+if "ctrl_opacity" not in st.session_state: st.session_state.ctrl_opacity = 0.75
+if "ctrl_basemap" not in st.session_state: st.session_state.ctrl_basemap = "CartoDB.DarkMatter"
 
 # ─────────────────────────────────────────────────────────────
 #  KONSTANTA
@@ -729,14 +733,15 @@ except Exception:
 
 if raster_exists:
     try:
-        # Gunakan ini untuk memanggil file .tif kamu
-m.add_raster(
-    RASTER_FILE, 
-    layer_name="Risiko Banjir", 
-    palette=['#2ecc51', '#eab308', '#f97316', '#ef4444'], # Hijau, Kuning, Oranye, Merah
-    opacity=st.session_state.ctrl_opacity,
-    zoom_to_layer=True
-)
+        m.add_raster(
+            source=RASTER_FILE,
+            colormap=RISK_COLORMAP["colors"],
+            vmin=RISK_COLORMAP["vmin"],
+            vmax=RISK_COLORMAP["vmax"],
+            layer_name="Risiko Banjir Medan",
+            opacity=opacity,
+            fit_bounds=True,
+        )
         m.add_legend(
             title="Tingkat Risiko Banjir",
             legend_dict={
