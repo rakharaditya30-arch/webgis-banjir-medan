@@ -1,0 +1,13 @@
+name: webgis-banjir
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - streamlit
+  - leafmap
+  - localtileserver
+  - rasterio
+  - pyproj
+  - rioxarray
+  - matplotlib
+  - gdal
