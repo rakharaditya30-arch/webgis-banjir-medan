@@ -1,7 +1,7 @@
 """
 =============================================================================
   SISTEM INFORMASI GEOGRAFIS KERAWANAN BANJIR KOTA MEDAN
-  WebGIS Dashboard v2.1 — Analisis Risiko Banjir
+  WebGIS Dashboard — Analisis Risiko Banjir
   Dibuat dengan: Streamlit + Leafmap + Localtileserver
 =============================================================================
 """
