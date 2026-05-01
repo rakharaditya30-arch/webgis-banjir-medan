@@ -6,10 +6,41 @@
 =============================================================================
 """
 
+# 1. SEMUA IMPORT DI PALING ATAS
 import os
 import random
 import streamlit as st
 import leafmap.foliumap as leafmap
+
+# 2. KONFIGURASI HALAMAN (Harus yang pertama setelah import)
+st.set_page_config(
+    page_title="Banjir Kota Medan",
+    page_icon="",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+# 3. BARU MASUKKAN LOGIKA PEMBUATAN PETA
+path_tif = "risiko_banjir_medan.tif"
+
+# Cek file
+if not os.path.exists(path_tif):
+    st.error(f"File {path_tif} tidak ditemukan di server!")
+else:
+    # Buat Map
+    m = leafmap.Map(center=[3.59, 98.67], zoom=12)
+
+    # Tambahkan Raster
+    m.add_raster(
+        path_tif, 
+        layer_name="Risiko Banjir", 
+        palette=['#2ecc71', '#f1c40f', '#e67e22', '#e74c3c'], 
+        opacity=0.8,
+        zoom_to_layer=True
+    )
+
+    # Tampilkan di Streamlit
+    m.to_streamlit(height=600)
 
 # ─────────────────────────────────────────────────────────────
 #  KONFIGURASI HALAMAN
