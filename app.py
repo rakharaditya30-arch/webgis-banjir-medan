@@ -9,7 +9,10 @@
 import os
 import random
 import streamlit as st
-os.environ['PROJ_LIB'] = r'C:\Users\Lenovo\miniconda3\envs\medan_webgis\Library\share\proj'
+
+# Gunakan ini saja untuk di Streamlit Cloud (Linux)
+os.environ['PROJ_LIB'] = '/usr/share/proj'
+
 import leafmap.foliumap as leafmap
 
 # ─────────────────────────────────────────────────────────────
