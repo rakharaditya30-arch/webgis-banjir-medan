@@ -7,43 +7,10 @@
 """
 
 # 1. SEMUA IMPORT DI PALING ATAS
+import os
+import random
 import streamlit as st
 import leafmap.foliumap as leafmap
-import os
-
-# --- 1. SETTING HALAMAN (Hanya boleh satu kali di paling atas) ---
-# (Biarkan set_page_config kamu yang sudah ada tetap di situ)
-
-# --- 2. TAMPILKAN JUDUL & HEADER ---
-st.title("Sistem Informasi Geografis Kerawanan Banjir Kota Medan")
-st.write("SPATIAL FLOOD RISK ANALYSIS DASHBOARD 2024")
-
-# --- 3. LOGIKA PETA (Letakkan di bawah judul agar tidak muncul di atas) ---
-path_tif = "risiko_banjir_medan.tif"
-
-# Cek file ada atau tidak
-if os.path.exists(path_tif):
-    # Buat objek peta satu kali saja
-    m = leafmap.Map(center=[3.59, 98.67], zoom=12)
-    
-    # Ganti basemap ke dark agar kontras (seperti desain kamu)
-    m.add_basemap("CartoDB.DarkMatter")
-
-    # Tambahkan Raster dengan pengaturan ini agar 'terbaca'
-    # Kita gunakan palette warna agar data 1,2,3 muncul warnanya
-    m.add_raster(
-        path_tif, 
-        layer_name="Peta Risiko Banjir", 
-        palette=['green', 'yellow', 'orange', 'red'], 
-        opacity=0.7,
-        zoom_to_layer=True
-    )
-    
-    # Tampilkan peta di layout utama
-    m.to_streamlit(height=600)
-else:
-    st.error("File GeoTIFF tidak ditemukan. Pastikan file ada di GitHub.")
-
 
 # ─────────────────────────────────────────────────────────────
 #  KONFIGURASI HALAMAN
