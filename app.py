@@ -737,7 +737,7 @@ if raster_exists:
             colormap=RISK_COLORMAP["colors"],
             vmin=RISK_COLORMAP["vmin"],
             vmax=RISK_COLORMAP["vmax"],
-            layer_name="Risiko Banjir Medan",
+            layer_name="risiko_banjir_medan.tif",
             opacity=opacity,
             fit_bounds=True,
         )
