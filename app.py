@@ -9,10 +9,6 @@
 import os
 import random
 import streamlit as st
-
-# Gunakan ini saja untuk di Streamlit Cloud (Linux)
-os.environ['PROJ_LIB'] = '/usr/share/proj'
-
 import leafmap.foliumap as leafmap
 
 # ─────────────────────────────────────────────────────────────
