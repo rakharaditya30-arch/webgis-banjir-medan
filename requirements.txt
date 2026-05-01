@@ -1,18 +1,8 @@
-# ─────────────────────────────────────────────────────────────
-#  requirements.txt
-#  WebGIS Dashboard — Analisis Risiko Banjir Kota Medan
-# ─────────────────────────────────────────────────────────────
-
-# --- Framework Utama & Peta ---
-streamlit>=1.35.0
-leafmap>=0.36.0
-folium>=0.17.0
-localtileserver>=0.10.3
-
-# --- Pemrosesan Data Spasial & Raster ---
-rasterio>=1.3.10
+streamlit
+leafmap
+localtileserver
+rasterio
 pyproj
+folium
+matplotlib
 rioxarray
-xarray
-netcdf4
-matplotlib>=3.9.0
