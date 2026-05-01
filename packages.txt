@@ -1,3 +1,6 @@
 libgdal-dev
 gdal-bin
 libgl1
+libproj-dev
+proj-bin
+proj-data
