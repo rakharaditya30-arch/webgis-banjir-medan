@@ -9,7 +9,7 @@
 import os
 import random
 import streamlit as st
-os.environ['PROJ_LIB'] = r'C:\Users\Lenovo\miniconda3\envs\medan_webgis\Library\share\proj'
+import matplotlib.colors as mcolors
 import leafmap.foliumap as leafmap
 
 # ─────────────────────────────────────────────────────────────
@@ -732,16 +732,100 @@ except Exception:
     m.add_basemap("CartoDB.DarkMatter")
 
 if raster_exists:
+    _raster_loaded = False
+
+    # ── Pendekatan 1: localtileserver (tiles, lebih halus saat zoom) ──
     try:
+        _cmap = mcolors.LinearSegmentedColormap.from_list(
+            "flood_risk", RISK_COLORMAP["colors"], N=256
+        )
         m.add_raster(
             source=RASTER_FILE,
-            colormap=RISK_COLORMAP["colors"],
+            colormap=_cmap,
             vmin=RISK_COLORMAP["vmin"],
             vmax=RISK_COLORMAP["vmax"],
             layer_name="Risiko Banjir Medan",
             opacity=opacity,
             fit_bounds=True,
         )
+        _raster_loaded = True
+    except Exception as _e1:
+        pass  # coba fallback di bawah
+
+    # ── Pendekatan 2: ImageOverlay statis via rasterio (tanpa localtileserver) ──
+    if not _raster_loaded:
+        try:
+            import io, base64
+            import numpy as np
+            import rasterio
+            import matplotlib.pyplot as plt
+            from matplotlib.colors import ListedColormap, BoundaryNorm
+            import folium
+
+            with rasterio.open(RASTER_FILE) as _src:
+                _data   = _src.read(1).astype(float)
+                _bounds = _src.bounds
+                _nodata = _src.nodata
+
+            if _nodata is not None:
+                _data[_data == _nodata] = np.nan
+
+            # Buat colormap diskret 4 kelas (1-4)
+            _fb_cmap = ListedColormap(RISK_COLORMAP["colors"])
+            _fb_norm = BoundaryNorm(
+                [0.5, 1.5, 2.5, 3.5, 4.5], _fb_cmap.N
+            )
+            _rgba = _fb_cmap(_fb_norm(np.ma.masked_invalid(_data)))
+            # Piksel nodata → transparan
+            _rgba[..., 3] = np.where(np.isnan(_data), 0, opacity)
+
+            # Turunkan resolusi agar ukuran PNG masuk akal (≤ 1024 px sisi terpanjang)
+            _h, _w = _data.shape
+            _scale  = min(1024 / max(_h, _w, 1), 1.0)
+            _dpi    = 100
+            _fig, _ax = plt.subplots(
+                figsize=(_w * _scale / _dpi, _h * _scale / _dpi), dpi=_dpi
+            )
+            _ax.imshow(_rgba, aspect="auto", interpolation="nearest")
+            _ax.axis("off")
+            _fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+            _buf = io.BytesIO()
+            _fig.savefig(
+                _buf, format="png",
+                bbox_inches="tight", pad_inches=0, transparent=True
+            )
+            plt.close(_fig)
+            _buf.seek(0)
+
+            _img_url = (
+                "data:image/png;base64,"
+                + base64.b64encode(_buf.getvalue()).decode()
+            )
+            folium.raster_layers.ImageOverlay(
+                image=_img_url,
+                bounds=[
+                    [_bounds.bottom, _bounds.left],
+                    [_bounds.top,    _bounds.right],
+                ],
+                opacity=opacity,
+                name="Risiko Banjir Medan",
+                cross_origin=False,
+            ).add_to(m)
+
+            # Fit map ke batas raster
+            m.fit_bounds(
+                [[_bounds.bottom, _bounds.left], [_bounds.top, _bounds.right]]
+            )
+            _raster_loaded = True
+        except Exception as _e2:
+            st.markdown(
+                f"<div class='warning-box'><strong>Gagal Memuat Raster</strong><br>"
+                f"<code>{_e2}</code></div>",
+                unsafe_allow_html=True,
+            )
+
+    if _raster_loaded:
         m.add_legend(
             title="Tingkat Risiko Banjir",
             legend_dict={
@@ -751,11 +835,6 @@ if raster_exists:
                 "Sangat Tinggi": "#ef4444",
             },
             position="bottomright",
-        )
-    except Exception as e:
-        st.markdown(
-            f"<div class='warning-box'><strong>Gagal Memuat Raster</strong><br>"
-            f"<code>{e}</code></div>", unsafe_allow_html=True
         )
 
 m.add_layer_control()
